@@ -57,7 +57,8 @@
             upload.addEventListener("change", async (e) => {
                 const f = e.target.files[0];
                 const s = await f.text();
-                download("device_list.csv", Papa.unparse(process(s)));
+                const now = (new Date()).toLocaleString("it-IT").replaceAll(/[,\/: ]/g, "_");
+                download("device_list_" + now + ".csv", Papa.unparse(process(s)));
             });
         </script>
   </body>
