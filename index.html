@@ -38,17 +38,17 @@
                 let output = [];
                 let obj = null;
                 for (const line of lines) {
-                    if (line.startsWith("ip")) {
+                    if (line.startsWith("ip ")) {
                         if (obj != null) {
                             output.push(obj);
                         }
                         obj = {};
                         obj.ip = line.split(" ")[1];
-                    } else if (line.startsWith("hardware vendor")) {
+                    } else if (line.startsWith("hardware vendor ")) {
                         obj.hardware = getQuoted(line);
-                    } else if (line.startsWith("os")){
+                    } else if (line.startsWith("os ")){
                         obj.os = getQuoted(line);
-                    } else if (line.startsWith("host")) {
+                    } else if (line.startsWith("host ")) {
                         obj.host = getQuoted(line);
                     }
                 }
