@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Device List CSV Converter"
+    />
+    <title>Device List CSV Converter</title>
+  </head>
+  <body>
+        <input type="file" id="upload" name="upload" />
+        <script type="text/javascript" src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+        <p>Upload the output from "diagnose user device list".</p>
+        <script>
+            const upload = document.getElementById("upload");
+            function download(filename, text) {
+                var pom = document.createElement('a');
+                pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                pom.setAttribute('download', filename);
+
+                if (document.createEvent) {
+                    var event = document.createEvent('MouseEvents');
+                    event.initEvent('click', true, true);
+                    pom.dispatchEvent(event);
+                }
+                else {
+                    pom.click();
+                }
+            }
+            function getQuoted(s) {
+                return s.match(/'([^\']+)'/)[1];
+            }
+            function process(s) {
+                const lines = s.split(/\r?\n/).map(l => l.trim());
+                let output = [];
+                let obj = null;
+                for (const line of lines) {
+                    if (line.startsWith("ip")) {
+                        if (obj != null) {
+                            output.push(obj);
+                        }
+                        obj = {};
+                        obj.ip = line.split(" ")[1];
+                    } else if (line.startsWith("hardware vendor")) {
+                        obj.hardware = getQuoted(line);
+                    } else if (line.startsWith("os")){
+                        obj.os = getQuoted(line);
+                    } else if (line.startsWith("host")) {
+                        obj.host = getQuoted(line);
+                    }
+                }
+                return output;
+            }
+            upload.addEventListener("change", async (e) => {
+                const f = e.target.files[0];
+                const s = await f.text();
+                download("device_list.csv", Papa.unparse(process(s)));
+            });
+        </script>
+  </body>
+</html>
